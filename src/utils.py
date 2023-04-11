@@ -17,7 +17,29 @@ def read_json(path):
     with open(path, 'r', encoding='utf-8') as fr:
         return json.load(fr)
 
-def write_file(path, datas):
+def write_file(path, datas, sp=" "):
     with open(path, 'w', encoding='utf-8') as fr:
         for data in datas:
-            fr.write(" ".join(data) + '\n')
+            fr.write(sp.join(data) + '\n')
+
+def read_nbest(path, sp=' '):
+    # load asr nbest result
+    nbest_split_paths = []
+    for hyp_split in sorted(os.listdir(path)):
+        if 'output.' not in hyp_split: continue
+        hyp_split_path = os.path.join(path, hyp_split)
+        nbest_len = len(os.listdir(hyp_split_path))
+        nbest_split_path = []
+        for nbest in range(1, nbest_len + 1):
+            hyp_nbest_path = os.path.join(hyp_split_path, f'{nbest}best_recog/text')
+            nbest_split_path.append(hyp_nbest_path)
+        nbest_split_paths.append(nbest_split_path)
+
+    hyp_dicts = {}
+    for nbest_split_path in nbest_split_paths:
+        for i in range(len(nbest_split_path)):
+            _hyp_datas = read_file(nbest_split_path[i], sp=sp)
+
+            for idx, hyp in _hyp_datas:
+                hyp_dicts[idx] = hyp_dicts[idx] + [hyp] if idx in hyp_dicts else [hyp]
+    return hyp_dicts

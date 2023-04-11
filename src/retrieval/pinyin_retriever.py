@@ -15,26 +15,27 @@ class PinyinRetriever(AbsRetriever):
         self.contexts = self._load_entity(entity_path)
 
     def _load_entity(self, entity_path):
+        contexts         = []
         entity_raw_datas = read_json(entity_path)
-
-        contexts = []
         for _type in entity_raw_datas:
-            contexts.extend([[e, self._encode(e)] for e in entity_raw_datas[_type]])
+            contexts.extend([[e, self.encode(e)] for e in entity_raw_datas[_type]])
         return contexts
 
-    def _encode(self, word):
+    @classmethod
+    def encode(cls, word):
         return " ".join(lazy_pinyin(word))
 
-    def _similarity(self, query, value):
+    @classmethod
+    def similarity(cls, query, value):
         score = fuzz.ratio(query, value) / 100
         return score
 
     def retrieve_one_step(self, text: str, topk: int=10) -> List[str]:
-        query  = self._encode(text)
+        query  = self.encode(text)
         result = [] 
         for i in range(len(self.contexts)):
             key, value = self.contexts[i]
-            score = self._similarity(query, value)
+            score = self.similarity(query, value)
             result.append([score, key])
         return sorted(result, reverse=True)[:topk]
         

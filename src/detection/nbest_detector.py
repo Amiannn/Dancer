@@ -64,25 +64,67 @@ class NbestDetector(BertDetector):
         return prediction
 
     def predict_one_step_no_detect(self, text, nbest, prediction):
-        align_nbest = [self.aligment(text, best) for best in nbest]
-        
         nbest_prediction = []
+        align_nbest      = [self.aligment(text, best) for best in nbest]
         for align_target, align_text in align_nbest:
             align_prediction = self.shift(align_target, prediction, self.add_token)
             align_prediction = [[
                 align_text[pos[0]:pos[1]].replace(self.add_token, " "), entity_type, pos
             ] for entity, entity_type, pos in align_prediction]
             nbest_prediction.append(align_prediction)
-        return nbest_prediction
+        
+        # copy prediction
+        prediction_nbest = [[
+            entity, entity_type, position
+        ] for entity, entity_type, position in prediction]
+        
+        for i in range(len(nbest_prediction[0])):
+            prediction_nbest[i][0] = []
+            for j in range(len(nbest_prediction)):
+                prediction_nbest[i][0].append(nbest_prediction[j][i][0])
+        return prediction_nbest
+
+    def predict_no_detect(self, texts, nbests, predictions):
+        nbest_predictions = []
+        for text, nbest, prediction in zip(texts, nbests, predictions):
+            nbest_prediction = []
+            if len(prediction) > 0:
+                nbest_prediction = self.predict_one_step_no_detect(text, nbest, prediction)
+            nbest_predictions.append(nbest_prediction)
+        return nbest_predictions
+
+    def predict_one_step(self, text: str, nbest: List[str]) -> List[str]:
+        predictions = super().predict([text])[0]
+        return self.predict_one_step_no_detect(text, nbest, predictions)
+
+    def predict(self, texts: List[str], nbests: List[str]) -> List[str]:
+        predictions = super().predict(texts)
+        return self.predict_no_detect(texts, nbests, predictions)
 
 if __name__ == "__main__":
-    target = "AXI比較特別的是它可以用X ray的原理"
-    nbest  = [
-        "AXI比較特別的是以用X_y ray的原理",
-        "AXI比較特別的是以用Xy ray的原理",
-        "AXI比較特別的的是以用X_y ray的原理"
+    targets = [
+        "AXI比較特別的是它可以用X ray的原理", 
+        "阮经天和许玮甯交往八年屡传婚讯"
     ]
-    prediction = [["AXI", "ORG", [0, 3]], ["X ray", "ORG", [13, 18]]]
 
-    detector = NbestDetector(model='test')
-    result = detector.predict_one_step_no_detect(target, nbest, prediction)
+    nbests  = [
+        [
+            "AXI比較特別的是以用X_y ray的原理",
+            "AXI比較特別的是以用Xy ray的原理",
+            "AXI比較特別的的是以用X_y ray的原理"
+        ],
+        [
+            "阮经天和许玮甯交往八年屡传婚讯",
+            "亂今天嗎和许玮甯交往八年屡传婚讯",
+            "阮经天和玮甯交往八年屡传婚讯"
+        ],
+    ]
+    predictions = [
+        [["AXI", "ORG", [0, 3]], ["X ray", "ORG", [13, 18]]],
+        [["阮经天", "PRE", [0, 3]], ["X ray", "ORG", [4, 7]]]
+    ]
+
+    model_path = "/share/nas165/amian/experiments/speech/AISHELL-NER/outputs/best_model"
+    detector = NbestDetector(model_path=model_path)
+    result = detector.predict_one_step(targets[1], nbests[1])
+    print(result)
