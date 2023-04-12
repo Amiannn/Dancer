@@ -1,6 +1,6 @@
 import numpy as np
 
-from Bio    import pairwise2
+from Bio    import Align
 from typing import List
 
 from simpletransformers.ner import NERArgs
@@ -15,6 +15,7 @@ class NbestDetector(BertDetector):
         else:
             self.model = model
         self.add_token = "-"
+        self.aligner = self._get_aligner()
 
     def _normalize(self, text):
         return text.replace('-', '')
@@ -42,11 +43,18 @@ class NbestDetector(BertDetector):
             prediction.append([entity, t, [start, end]])
         return prediction
 
-    @classmethod
-    def aligment(cls, target, text):
-        alignments = pairwise2.align.globalxx(target, text)[0]
-        # return [cls._normalize(cls, alignments.seqA), cls._normalize(cls, alignments.seqB)]
-        return [alignments.seqA, alignments.seqB]
+    def _get_aligner(self):
+        aligner = Align.PairwiseAligner()
+        aligner.match_score    = 1.0 
+        aligner.gap_score      = -2.5
+        aligner.mismatch_score = -2.0
+        return aligner
+
+    def aligment(self, target, text):
+        alignments = self.aligner.align(target, text)[0]
+        alignments = str(alignments).split('\n')
+        seqA, seqB = alignments[0], alignments[2]
+        return [seqA, seqB]
 
     def shift(self, text, prediction, add_token="-"):
         entity, entity_type, flatten = self.position_to_flatten(text, prediction)
@@ -72,7 +80,7 @@ class NbestDetector(BertDetector):
                 align_text[pos[0]:pos[1]].replace(self.add_token, " "), entity_type, pos
             ] for entity, entity_type, pos in align_prediction]
             nbest_prediction.append(align_prediction)
-        
+
         # copy prediction
         prediction_nbest = [[
             entity, entity_type, position

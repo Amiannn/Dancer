@@ -8,8 +8,8 @@ from src.detection.abs_detector import AbsDetector
 from ckip_transformers.nlp import CkipNerChunker
 
 class CkipDetector(AbsDetector):
-    def __init__(self, model_path, use_cuda=True):
-        self.ner_driver = CkipNerChunker(model=model_path)
+    def __init__(self, model_path, use_cuda=0):
+        self.ner_driver = CkipNerChunker(model=model_path, device=use_cuda)
 
     def _postprocess(self, datas):
         result = []
@@ -23,6 +23,7 @@ class CkipDetector(AbsDetector):
         return result
 
     def predict(self, texts: List[str]) -> List[str]:
+        # predictions = self.ner_driver(texts, batch_size=64, use_delim=False)
         predictions = self.ner_driver(texts, use_delim=False)
         predictions = [self._postprocess(pred) for pred in predictions]
         return predictions
