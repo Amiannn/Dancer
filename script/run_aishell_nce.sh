@@ -5,7 +5,7 @@ ENTITY_PATH="/share/nas165/amian/experiments/speech/AISHELL-NER/dump/2023_21_02_
 
 DETECTION_MODEL_TYPE="bert_detector"
 RETRIEVAL_MODEL_TYPE="pinyin_retriever"
-USE_REJECTION=false
+USE_REJECTION="True"
 
 python3 -m entity_correction                                 \
     --asr_transcription_path $TRANSCRIPTION_PATH             \
