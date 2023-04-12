@@ -1,5 +1,6 @@
 import os
 import time
+import argparse
 
 from tqdm import tqdm
 
@@ -25,8 +26,13 @@ def NameEntityCorrector(texts, nbests, detector, nbest_detector, retriever):
         entities  = [entity for entity, entity_type, position in prediction]
         results   = retriever.retrieve(entities)
         candiates = [result[0][1] for result in results]
+
+        print(f'entity   : {entities}')
+        print(f'candiates: {candiates}')
         candiates = NbestRejector.reject(prediction, predictions_nbest[i], candiates)
-        
+
+        print(f'final candiates: {candiates}')
+        print('_' * 30)
         now, final_text = 0, []
         for candiate, predict in zip(candiates, prediction):
             _, _, position = predict
@@ -38,28 +44,28 @@ def NameEntityCorrector(texts, nbests, detector, nbest_detector, retriever):
     return final_texts
 
 if __name__ == '__main__':
-    asr_transcription_path       = "/share/nas165/amian/experiments/speech/espnet/workspace/esun_zh_tcpgen/asr1/exp/asr_train_asr_conformer_raw_zh_char_use_wandbtrue_sp/decode_asr_transformer_asr_model_valid.acc.ave_10best/aishell_ner/test/text"
-    asr_nbest_transcription_path = "/share/nas165/amian/experiments/speech/espnet/workspace/esun_zh_tcpgen/asr1/exp/asr_train_asr_conformer_raw_zh_char_use_wandbtrue_sp/decode_asr_transformer_asr_model_valid.acc.ave_10best/aishell_ner/test/logdir"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--asr_transcription_path"      ,  type=str, required=True)
+    parser.add_argument("--asr_nbest_transcription_path",  type=str, required=False)
+    parser.add_argument("--detection_model_path"        ,  type=str, required=True)
+    parser.add_argument("--entity_path"                 ,  type=str, required=True)
+    args = parser.parse_args()
 
-    asr_texts   = read_file(asr_transcription_path, sp=' ')
-    nbests_dict = read_nbest(asr_nbest_transcription_path, sp=' ')
+    asr_texts   = read_file(args.asr_transcription_path, sp=' ')
+    nbests_dict = read_nbest(args.asr_nbest_transcription_path, sp=' ')
 
-    indexis = [index for index, text in asr_texts]
-    texts   = [text for index, text in asr_texts]
+    indexis = [data[0] for data in asr_texts]
+    texts   = [" ".join(data[1:]) for data in asr_texts]
     nbests  = [nbests_dict[index][1:] for index, _ in asr_texts]
 
-
-    detection_model_path = "/share/nas165/amian/experiments/speech/AISHELL-NER/outputs/best_model"
-    entity_path          = "/share/nas165/amian/experiments/speech/AISHELL-NER/dump/2023_27_01__20_46_40/all_entities.json"
-
-    detector       = BertDetector(detection_model_path)
+    detector       = BertDetector(args.detection_model_path)
     nbest_detector = NbestDetector(model=detector.model)
-    retriever      = PinyinRetriever(entity_path)
+    retriever      = PinyinRetriever(args.entity_path)
 
     results = NameEntityCorrector(texts, nbests, detector, nbest_detector, retriever)
     results = [[index, result] for index, result in zip(indexis, results)]
 
-    time_now = time.strftime("%Y_%d_%m__%H_%M_%S", time.localtime())
+    time_now = time.strftime("%Y_%m_%d__%H_%M_%S", time.localtime())
     exp_dir  = os.path.join(OUTPUT_DIR, time_now)
     os.mkdir(exp_dir)
     print(f'save to {exp_dir}...')

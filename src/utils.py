@@ -39,7 +39,7 @@ def read_nbest(path, sp=' '):
     for nbest_split_path in nbest_split_paths:
         for i in range(len(nbest_split_path)):
             _hyp_datas = read_file(nbest_split_path[i], sp=sp)
-
+            _hyp_datas = [[data[0], " ".join(data[1:])] for data in _hyp_datas]
             for idx, hyp in _hyp_datas:
                 hyp_dicts[idx] = hyp_dicts[idx] + [hyp] if idx in hyp_dicts else [hyp]
     return hyp_dicts

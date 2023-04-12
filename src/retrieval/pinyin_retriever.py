@@ -17,8 +17,11 @@ class PinyinRetriever(AbsRetriever):
     def _load_entity(self, entity_path):
         contexts         = []
         entity_raw_datas = read_json(entity_path)
-        for _type in entity_raw_datas:
-            contexts.extend([[e, self.encode(e)] for e in entity_raw_datas[_type]])
+        if isinstance(entity_raw_datas, dict):
+            for _type in entity_raw_datas:
+                contexts.extend([[e, self.encode(e)] for e in entity_raw_datas[_type]])
+        else:
+            contexts = [[e, self.encode(e)] for e in entity_raw_datas]
         return contexts
 
     @classmethod
