@@ -19,10 +19,8 @@ from src.rejection.nbest_rejector import NbestRejector
 
 OUTPUT_DIR = './dump'
 
-def NameEntityCorrector(args, texts, detector, retriever, nbests=None, nbest_detector=None):
+def NameEntityCorrector(args, texts, detector, retriever, ref_texts=None, nbests=None, nbest_detector=None):
     if args.detection_model_type == "cheat_detector":
-        ref_texts = read_file(args.asr_manuscript_path, sp=' ')
-        ref_texts = [" ".join(data[1:]) for data in ref_texts]
         predictions = detector.predict(ref_texts, texts)
     else:
         predictions = detector.predict(texts)
@@ -51,7 +49,7 @@ def NameEntityCorrector(args, texts, detector, retriever, nbests=None, nbest_det
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--asr_transcription_path"      ,  type=str, required=True)
-    parser.add_argument("--asr_manuscript_path"         ,  type=str, required=False)
+    parser.add_argument("--asr_manuscript_path"         ,  type=str, required=True)
 
     parser.add_argument("--detection_model_type"        ,  type=str, required=True)
     parser.add_argument("--detection_model_path"        ,  type=str, required=True)
@@ -68,6 +66,9 @@ if __name__ == '__main__':
     asr_texts = read_file(args.asr_transcription_path, sp=' ')
     indexis   = [data[0] for data in asr_texts]
     texts     = [" ".join(data[1:]) for data in asr_texts]
+
+    ref_texts = read_file(args.asr_manuscript_path, sp=' ')
+    ref_texts = [" ".join(data[1:]) for data in ref_texts]
     
     if args.detection_model_type == "bert_detector":
         detector  = BertDetector(args.detection_model_path)
@@ -82,22 +83,33 @@ if __name__ == '__main__':
     args.use_rejection = True if args.use_rejection == "True" else False
 
     print(args.use_rejection)
+
     if not args.use_rejection:
-        results = NameEntityCorrector(args, texts, detector, retriever)
+        results = NameEntityCorrector(args, texts, detector, retriever, ref_texts=ref_texts)
     else:
         nbests_dict = read_nbest(args.asr_nbest_transcription_path, sp=' ')
         nbests  = [nbests_dict[index][1:] for index, _ in asr_texts]
         # nbest_detector = NbestDetector(model=detector.model)
         nbest_detector = NbestDetector(model="None")
         
-        results = NameEntityCorrector(args, texts, detector, retriever, nbests, nbest_detector)
+        results = NameEntityCorrector(args, texts, detector, retriever, ref_texts, nbests, nbest_detector)
 
-    results = [[index, result] for index, result in zip(indexis, results)]
+    # hyp = [[index, " ".join(list(result))] for index, result in zip(indexis, results)]
+    # ref = [[index, " ".join(list(text))] for index, text in zip(indexis, ref_texts)]
+
+    # hyp = [[" ".join(list(result))] for index, result in zip(indexis, results)]
+    # ref = [[" ".join(list(text))] for index, text in zip(indexis, ref_texts)]
+
+    hyp = [[" ".join(list(result)), f"(aishell_{index})"] for index, result in zip(indexis, results)]
+    ref = [[" ".join(list(text)), f"(aishell_{index})"] for index, text in zip(indexis, ref_texts)]
 
     time_now = time.strftime("%Y_%m_%d__%H_%M_%S", time.localtime())
     exp_dir  = os.path.join(OUTPUT_DIR, time_now)
     os.mkdir(exp_dir)
     print(f'save to {exp_dir}...')
 
-    res_path = os.path.join(exp_dir, 'hyp')
-    write_file(res_path, results)
+    res_path = os.path.join(exp_dir, 'hyp.trn.txt')
+    write_file(res_path, hyp)
+
+    res_path = os.path.join(exp_dir, 'ref.trn.txt')
+    write_file(res_path, ref)
