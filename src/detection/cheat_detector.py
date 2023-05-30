@@ -6,6 +6,7 @@ from typing import List
 from simpletransformers.ner import NERArgs
 from simpletransformers.ner import NERModel
 
+from src.utils import read_file
 from src.utils import read_json
 from src.detection.abs_detector import AbsDetector
 
@@ -16,13 +17,9 @@ class CheatDetector(AbsDetector):
         self.aligner = self._get_aligner()
 
     def _load_entity(self, entity_path):
-        contexts         = []
-        entity_raw_datas = read_json(entity_path)
-        if isinstance(entity_raw_datas, dict):
-            for _type in entity_raw_datas:
-                contexts.extend([e for e in entity_raw_datas[_type]])
-        else:
-            contexts = [e for e in entity_raw_datas]
+        contexts = []
+        contexts = read_file(entity_path)
+        contexts = [e[0] for e in contexts]
         return list(sorted(contexts, reverse=True))
     
     def _preprocess(self, texts):
@@ -153,11 +150,11 @@ class CheatDetector(AbsDetector):
         return predictions
 
 if __name__ == "__main__":
-    entity_path = "/share/nas165/amian/experiments/speech/AISHELL-NER/dump/2023_30_03__02_07_00/04_12_esun_entity_all.json"
+    entity_path = "/share/nas165/amian/experiments/speech/EntityCorrector/blists/aishell/test_1_entities.txt"
     detector = CheatDetector(entity_path)
 
-    target = "巴拿馬仰光桃竹不可以給我們今年的那個htr因為去年家樂福那個是htr"
-    text   = "可能會給我們今年的那個htr因為去年家樂福那個是htr"
+    target = "每日经济新闻记者杨建江南嘉捷六万"
+    text   = "每日经济新闻记者杨建江南嘉捷六万"
 
     prediction = detector.predict_one_step(target, text)
     print(prediction)

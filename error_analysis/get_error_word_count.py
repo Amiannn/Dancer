@@ -1,23 +1,41 @@
 import sys
 
+from src.utils import read_file
+from src.utils import read_json
+from src.utils import write_file
+
 error_words_freqs = {}
-infile = sys.argv[1]
-# setname = sys.argv[2]
+infile            = sys.argv[1]
+word_freq_path    = sys.argv[2]
+rare_word_path    = sys.argv[3]
+
 insert_error = 0
 insert_rare = 0
 freqlist_test = {}
 
 freqlist = {}
 # TODO: Change to path to your word frequency file
-with open("./error_analysis/word_freq.txt") as fin:
-    for line in fin:
-        word, freq = line.split()
-        freqlist[word.upper()] = int(freq)
 
-with open("./blists/all_rare_words.txt") as fin:
-    rareset = set()
-    for line in fin:
-        rareset.add(line.strip().upper())
+freqlist = read_file(word_freq_path, sp=' ')
+freqlist = {word: int(freq) for word, freq in freqlist}
+
+# with open(word_freq_path, 'r', encoding='utf-8') as fin:
+#     for line in fin:
+#         word, freq = line.split()
+#         freqlist[word.upper()] = int(freq)
+
+# with open(rare_word_path) as fin:
+#     rareset = set()
+#     for line in fin:
+#         rareset.add(line.strip().upper())
+
+rareset = read_file(rare_word_path)
+rareset = set([e[0] for e in rareset])
+print(rareset)
+# _tmp = []
+# for t in rareset:
+#     _tmp.extend([rare.upper() for rare in rareset[t]])
+# rareset = set(_tmp)
 
 project_set = set()
 with open(infile) as fin:
@@ -36,22 +54,29 @@ for i, line in enumerate(lines):
         line = line.replace("*", "")
         line.replace("%BCACK", "")
         for word in line.split()[1:]:
+            print(word, end=', ')
             if not word.startswith("("):
                 if word.upper() not in freqlist_test:
                     freqlist_test[word.upper()] = 1
                 else:
                     freqlist_test[word.upper()] += 1
 
-                if word != word.lower() and word.upper() in error_words_freqs:
+                if word in error_words_freqs:
                     error_words_freqs[word.upper()] += 1
-                elif word != word.lower() and word.upper() not in error_words_freqs:
+                elif word not in error_words_freqs:
                     error_words_freqs[word.upper()] = 1
-                elif word == word.lower() and word.upper() not in error_words_freqs:
-                    if word == word.upper():
-                        print("special token found in: {}".format(project))
-                    error_words_freqs[word.upper()] = 0
-                elif word == word.upper():
-                    print("special token found in: {}".format(project))
+
+                # if word != word.lower() and word.upper() in error_words_freqs:
+                #     error_words_freqs[word.upper()] += 1
+                # elif word != word.lower() and word.upper() not in error_words_freqs:
+                #     error_words_freqs[word.upper()] = 1
+                # elif word == word.lower() and word.upper() not in error_words_freqs:
+                #     if word == word.upper():
+                #         print("special token found in: {}".format(project))
+                #     error_words_freqs[word.upper()] = 0
+                # elif word == word.upper():
+                #     print("special token found in: {}".format(project))
+        print()
 print(len(error_words_freqs.keys()))
 print(insert_rare)
 

@@ -7,7 +7,9 @@ from pypinyin import Style
 from pypinyin import pinyin
 from pypinyin import lazy_pinyin
 
+from src.utils import read_file
 from src.utils import read_json
+
 from src.retrieval.abs_retriever import AbsRetriever
 
 class PinyinRetriever(AbsRetriever):
@@ -16,12 +18,14 @@ class PinyinRetriever(AbsRetriever):
 
     def _load_entity(self, entity_path):
         contexts         = []
-        entity_raw_datas = read_json(entity_path)
-        if isinstance(entity_raw_datas, dict):
-            for _type in entity_raw_datas:
-                contexts.extend([[e, self.encode(e)] for e in entity_raw_datas[_type]])
-        else:
-            contexts = [[e, self.encode(e)] for e in entity_raw_datas]
+        contexts = read_file(entity_path)
+        contexts = [[e[0], self.encode(e[0])] for e in contexts]
+        # entity_raw_datas = read_json(entity_path)
+        # if isinstance(entity_raw_datas, dict):
+        #     for _type in entity_raw_datas:
+        #         contexts.extend([[e, self.encode(e)] for e in entity_raw_datas[_type]])
+        # else:
+        #     contexts = [[e, self.encode(e)] for e in entity_raw_datas]
         return contexts
 
     @classmethod

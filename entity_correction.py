@@ -1,5 +1,6 @@
 import os
 import time
+import jieba
 import argparse
 
 from tqdm import tqdm
@@ -8,10 +9,11 @@ from src.utils import read_file
 from src.utils import read_nbest
 from src.utils import write_file
 
-from src.detection.bert_detector  import BertDetector
-from src.detection.ckip_detector  import CkipDetector
-from src.detection.nbest_detector import NbestDetector
-from src.detection.cheat_detector import CheatDetector
+from src.detection.bert_detector   import BertDetector
+from src.detection.ckip_detector   import CkipDetector
+from src.detection.nbest_detector  import NbestDetector
+from src.detection.cheat_detector  import CheatDetector
+from src.detection.pinyin_detector import PinyinDetector
 
 from src.retrieval.pinyin_retriever import PinyinRetriever
 
@@ -76,6 +78,8 @@ if __name__ == '__main__':
         detector  = CkipDetector(args.detection_model_path)
     elif args.detection_model_type == "cheat_detector":
         detector  = CheatDetector(args.entity_path)
+    elif args.detection_model_type == "pinyin_detector":
+        detector  = PinyinDetector(args.entity_path)
 
     if args.retrieval_model_type == "pinyin_retriever":
         retriever = PinyinRetriever(args.entity_path)
@@ -94,19 +98,24 @@ if __name__ == '__main__':
         
         results = NameEntityCorrector(args, texts, detector, retriever, ref_texts, nbests, nbest_detector)
 
-    # hyp = [[index, " ".join(list(result))] for index, result in zip(indexis, results)]
-    # ref = [[index, " ".join(list(text))] for index, text in zip(indexis, ref_texts)]
-
-    # hyp = [[" ".join(list(result))] for index, result in zip(indexis, results)]
-    # ref = [[" ".join(list(text))] for index, text in zip(indexis, ref_texts)]
-
-    hyp = [[" ".join(list(result)), f"(aishell_{index})"] for index, result in zip(indexis, results)]
-    ref = [[" ".join(list(text)), f"(aishell_{index})"] for index, text in zip(indexis, ref_texts)]
-
     time_now = time.strftime("%Y_%m_%d__%H_%M_%S", time.localtime())
     exp_dir  = os.path.join(OUTPUT_DIR, time_now)
     os.mkdir(exp_dir)
     print(f'save to {exp_dir}...')
+
+    hyp = [[index, result] for index, result in zip(indexis, results)]
+    ref = [[index, result] for index, result in zip(indexis, ref_texts)]
+
+    res_path = os.path.join(exp_dir, 'hyp.txt')
+    write_file(res_path, hyp)
+
+    res_path = os.path.join(exp_dir, 'ref.txt')
+    write_file(res_path, ref)
+
+    jieba.load_userdict(args.entity_path)
+
+    hyp = [[" ".join(jieba.cut(result, cut_all=False)), f"(aishell_{index})"] for index, result in zip(indexis, results)]
+    ref = [[" ".join(jieba.cut(result, cut_all=False)), f"(aishell_{index})"] for index, result in zip(indexis, ref_texts)]
 
     res_path = os.path.join(exp_dir, 'hyp.trn.txt')
     write_file(res_path, hyp)

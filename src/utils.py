@@ -13,14 +13,18 @@ def read_file(path, sp='\t'):
             datas.append(data)
     return datas
 
-def read_json(path):
-    with open(path, 'r', encoding='utf-8') as fr:
-        return json.load(fr)
-
 def write_file(path, datas, sp=" "):
     with open(path, 'w', encoding='utf-8') as fr:
         for data in datas:
             fr.write(sp.join(data) + '\n')
+
+def read_json(path):
+    with open(path, 'r', encoding='utf-8') as fr:
+        return json.load(fr)
+
+def write_json(path, datas):
+    with open(path, 'w', encoding='utf-8') as fr:
+        json.dump(datas, fr, indent=4)
 
 def read_nbest(path, sp=' '):
     # load asr nbest result
