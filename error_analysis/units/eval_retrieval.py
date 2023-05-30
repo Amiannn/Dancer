@@ -92,10 +92,10 @@ if __name__ == '__main__':
         detector  = PinyinDetector(args.entity_path)
 
     ref_texts = read_file(args.ref_path, sp=' ')
-    indexes   = [data[0] for data in ref_texts]
     ref_texts = [" ".join(data[1:]) for data in ref_texts]
     hyp_texts = read_file(args.hyp_path, sp=' ')
     hyp_texts = [" ".join(data[1:]) for data in hyp_texts]
+    indexes   = [data[0] for data in ref_texts]
 
     # get groundtruth
     ref_detection_result = gt_detector.predict(ref_texts, hyp_texts)
@@ -125,7 +125,6 @@ if __name__ == '__main__':
     recall   /= length
     accuracy /= length
     f1 = 2 * ((recall * accuracy) / (recall + accuracy))
-
 
     cross    = cross / error_length if error_length != 0 else 0
     no_cross = no_cross / error_length if error_length != 0 else 0

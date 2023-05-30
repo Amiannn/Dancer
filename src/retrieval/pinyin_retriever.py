@@ -20,12 +20,6 @@ class PinyinRetriever(AbsRetriever):
         contexts         = []
         contexts = read_file(entity_path)
         contexts = [[e[0], self.encode(e[0])] for e in contexts]
-        # entity_raw_datas = read_json(entity_path)
-        # if isinstance(entity_raw_datas, dict):
-        #     for _type in entity_raw_datas:
-        #         contexts.extend([[e, self.encode(e)] for e in entity_raw_datas[_type]])
-        # else:
-        #     contexts = [[e, self.encode(e)] for e in entity_raw_datas]
         return contexts
 
     @classmethod
@@ -37,8 +31,9 @@ class PinyinRetriever(AbsRetriever):
         score = fuzz.ratio(query, value) / 100
         return score
 
-    def retrieve_one_step(self, text: str, topk: int=10) -> List[str]:
-        query  = self.encode(text)
+    def retrieve_one_step(self, text: str, span: List[str], topk: int=10) -> List[str]:
+        entity, type, position = span
+        query  = self.encode(entity)
         result = [] 
         for i in range(len(self.contexts)):
             key, value = self.contexts[i]
@@ -46,9 +41,9 @@ class PinyinRetriever(AbsRetriever):
             result.append([score, key])
         return sorted(result, reverse=True)[:topk]
         
-    def retrieve(self, texts: List[str], topk: int=10) -> List[str]:
+    def retrieve(self, texts: List[str], spans: List[str], topk: int=10) -> List[str]:
         results = []
-        for text in texts:
-            result = self.retrieve_one_step(text, topk)
+        for text, span in zip(texts, spans):
+            result = self.retrieve_one_step(text, span, topk)
             results.append(result)
         return results

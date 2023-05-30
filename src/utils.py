@@ -24,7 +24,7 @@ def read_json(path):
 
 def write_json(path, datas):
     with open(path, 'w', encoding='utf-8') as fr:
-        json.dump(datas, fr, indent=4)
+        json.dump(datas, fr, indent=4, ensure_ascii=False)
 
 def read_nbest(path, sp=' '):
     # load asr nbest result

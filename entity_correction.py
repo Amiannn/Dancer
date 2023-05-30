@@ -8,6 +8,7 @@ from tqdm import tqdm
 from src.utils import read_file
 from src.utils import read_nbest
 from src.utils import write_file
+from src.utils import write_json
 
 from src.detection.bert_detector   import BertDetector
 from src.detection.ckip_detector   import CkipDetector
@@ -15,7 +16,9 @@ from src.detection.nbest_detector  import NbestDetector
 from src.detection.cheat_detector  import CheatDetector
 from src.detection.pinyin_detector import PinyinDetector
 
-from src.retrieval.pinyin_retriever import PinyinRetriever
+from src.retrieval.pinyin_retriever   import PinyinRetriever
+from src.retrieval.semantic_retriever import SemanticRetriever
+from src.retrieval.prsr_retriever     import PRSRRetriever
 
 from src.rejection.nbest_rejector import NbestRejector
 
@@ -31,9 +34,9 @@ def NameEntityCorrector(args, texts, detector, retriever, ref_texts=None, nbests
         predictions_nbest = nbest_detector.predict_no_detect(texts, nbests, predictions)
     final_texts = []
     for i, prediction in tqdm(enumerate(predictions)):
-        entities  = [entity for entity, entity_type, position in prediction]
-        results   = retriever.retrieve(entities)
-        candiates = [result[0][1] for result in results]
+        query_text = [texts[i] for _ in range(len(prediction))]
+        results    = retriever.retrieve(query_text, prediction)
+        candiates  = [result[0][1] for result in results]
 
         if args.use_rejection:
             candiates = NbestRejector.reject(prediction, predictions_nbest[i], candiates)
@@ -57,7 +60,11 @@ if __name__ == '__main__':
     parser.add_argument("--detection_model_path"        ,  type=str, required=True)
     
     parser.add_argument("--retrieval_model_type"        ,  type=str, required=True)
+    parser.add_argument("--retrieval_model_path"        ,  type=str, required=False)
+
     parser.add_argument("--entity_path"                 ,  type=str, required=True)
+    parser.add_argument("--entity_content_path"         ,  type=str, required=False)
+    parser.add_argument("--entity_vectors_path"         ,  type=str, required=False)
 
     parser.add_argument("--use_rejection"               ,  type=str, required=True)
     parser.add_argument("--asr_nbest_transcription_path",  type=str, required=False)
@@ -83,6 +90,20 @@ if __name__ == '__main__':
 
     if args.retrieval_model_type == "pinyin_retriever":
         retriever = PinyinRetriever(args.entity_path)
+    elif args.retrieval_model_type == "semantic_retriever":
+        retriever = SemanticRetriever(
+            args.retrieval_model_path,
+            args.entity_path,
+            args.entity_content_path,
+            args.entity_vectors_path
+        )
+    elif args.retrieval_model_type == "prsr_retriever":
+        retriever = PRSRRetriever(
+            args.retrieval_model_path,
+            args.entity_path,
+            args.entity_content_path,
+            args.entity_vectors_path
+        )
 
     args.use_rejection = True if args.use_rejection == "True" else False
 
@@ -93,7 +114,6 @@ if __name__ == '__main__':
     else:
         nbests_dict = read_nbest(args.asr_nbest_transcription_path, sp=' ')
         nbests  = [nbests_dict[index][1:] for index, _ in asr_texts]
-        # nbest_detector = NbestDetector(model=detector.model)
         nbest_detector = NbestDetector(model="None")
         
         results = NameEntityCorrector(args, texts, detector, retriever, ref_texts, nbests, nbest_detector)
@@ -105,6 +125,9 @@ if __name__ == '__main__':
 
     hyp = [[index, result] for index, result in zip(indexis, results)]
     ref = [[index, result] for index, result in zip(indexis, ref_texts)]
+
+    config_path = os.path.join(exp_dir, 'config.json')
+    write_json(config_path, args.__dict__)
 
     res_path = os.path.join(exp_dir, 'hyp.txt')
     write_file(res_path, hyp)
