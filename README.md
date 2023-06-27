@@ -15,7 +15,7 @@ Implementation of Entity Description Augmented Named Entity Corrector for Automa
 ## Scripts
 
 ```
-$ git clone https://github.com/Amiannn/NameEntityCorretor.git
+$ git clone https://github.com/Amiannn/Dancer.git
 ```
 
 ### Prediction
