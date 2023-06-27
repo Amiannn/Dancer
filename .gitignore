@@ -7,5 +7,5 @@ dump/*
 ckpts/*
 !ckpts/.gitkeep
 
-datas/entities/aishell/descriptions/*
-!datas/entities/aishell/descriptions/.gitkeep
+datas/*
+!datas/.gitkeep

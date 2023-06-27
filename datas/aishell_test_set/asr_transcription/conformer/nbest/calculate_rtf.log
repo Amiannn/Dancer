@@ -1,9 +1,0 @@
-# Running on kl03
-# Started at Mon Feb 20 17:00:33 CST 2023
-# calculate_rtf.py --log-dir exp/asr_train_asr_conformer_raw_zh_char_use_wandbtrue_sp/decode_asr_transformer_asr_model_valid.acc.ave_10best/aishell_ner/test/logdir --log-name asr_inference --input-shift 0.0625 --start-times-marker "speech length" --end-times-marker "best hypo" 
-Total audio duration: 36108.919 [sec]
-Total decoding time: 18641.798 [sec]
-RTF: 0.516
-Latency: 2597.798 [ms/sentence]
-# Accounting: time=2 threads=1
-# Finished at Mon Feb 20 17:00:35 CST 2023 with status 0
