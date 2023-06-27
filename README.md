@@ -1,14 +1,17 @@
 # DANCER💃: Entity Description Augmented Named Entity Corrector for Automatic Speech Recognition
+![DANCER](./diagram.svg) 
+<img src="./diagram.svg">
+
 Implementation of Entity Description Augmented Named Entity Corrector for Automatic Speech Recognition.
 
 ## Getting Started
 
 ### Dependency / Install
 
-(This work was tested with PyTorch 1.7.0, CUDA 11.7, python 3.8 and Ubuntu 20.04.)
+(This work was tested with PyTorch 2.0.1, CUDA 11.7, python 3.8 and Ubuntu 20.04.)
 
 - Install [PyTorch](https://pytorch.org/get-started/locally/)
-
+- Install [Faiss] (https://github.com/facebookresearch/faiss/blob/main/INSTALL.md)
 - `$ pip install -r requirements`
 
 
