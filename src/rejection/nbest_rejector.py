@@ -33,7 +33,7 @@ class NbestRejector(AbsRejector):
             original_rejection_score = cls.reject_one_step(cls, original, nbest)
 
             final = original
-            if candiate_rejection_score < original_rejection_score:
+            if candiate_rejection_score <= original_rejection_score:
                 final = candiate
             results.append(final)
         return results

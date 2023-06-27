@@ -1,16 +1,22 @@
-TRANSCRIPTION_PATH="/share/nas165/amian/experiments/speech/espnet_old/workspace/esun_zh_tcpgen/asr1/exp/asr_train_asr_conformer_raw_zh_char_use_wandbtrue_sp/decode_asr_transformer_asr_model_valid.acc.ave_10best/aishell_ner/test/text"
-TRANSCRIPTION_NBEST_PATH="/share/nas165/amian/experiments/speech/espnet_old/workspace/esun_zh_tcpgen/asr1/exp/asr_train_asr_conformer_raw_zh_char_use_wandbtrue_sp/decode_asr_transformer_asr_model_valid.acc.ave_10best/aishell_ner/test/logdir"
-MANSCRIPTION_PATH="/share/nas165/amian/experiments/speech/espnet_old/workspace/esun_zh_tcpgen/asr1/data/aishell_ner/test/text"
-DETECTION_MODEL_PATH="/share/nas165/amian/experiments/speech/AISHELL-NER/outputs/best_model"
-ENTITY_PATH="/share/nas165/amian/experiments/speech/EntityCorrector/blists/aishell/test_1_entities.txt"
+# input datas
+TRANSCRIPTION_PATH="./datas/aishell_test_set/asr_transcription/conformer/hyp"
+TRANSCRIPTION_NBEST_PATH="./datas/aishell_test_set/asr_transcription/conformer/nbest"
+MANSCRIPTION_PATH="./datas/aishell_test_set/ref"
 
-# semantic retrieval
-RETRIEVAL_MODEL_PATH="/share/nas165/amian/experiments/nlp/DPR/outputs/2023-03-07/16-45-46/output/dpr_biencoder.39"
-ENTITY_CONTENT_PATH="/share/nas165/amian/experiments/speech/AISHELL-NER/dump/2023_02_27__15_58_45_test/aishell_ner_ctx.json"
-ENTITY_VECTORS_PATH="/share/nas165/amian/experiments/speech/AISHELL-NER/dump/2023_15_03__14_36_47/embeds.npy"
+# entity datas
+ENTITY_PATH="./datas/entities/aishell/test_1_entities.txt"
+ENTITY_CONTENT_PATH="./datas/entities/aishell/descriptions"
+ENTITY_VECTORS_PATH="./datas/entities/aishell/descriptions/embeds.npy"
 
+# detection model
 DETECTION_MODEL_TYPE="bert_detector"
+DETECTION_MODEL_PATH="./ckpts/ner/best_model"
+
+# retrieval model
 RETRIEVAL_MODEL_TYPE="prsr_retriever"
+RETRIEVAL_MODEL_PATH="./ckpts/ranker/dpr_biencoder.39"
+
+# rejection
 USE_REJECTION="True"
 
 python3 -m entity_correction                                 \

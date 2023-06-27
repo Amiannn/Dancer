@@ -131,8 +131,10 @@ class PinyinDetector(AbsDetector):
         return [" ".join(list(text)) for text in texts]
 
     def predict(self, texts: List[str]) -> List[str]:
-        predictions = [self.predict_one_step(text) for text in tqdm(texts)]
-        return predictions
+        results = [self.predict_one_step(text) for text in tqdm(texts)]
+        predictions = [d[0] for d in results]
+        scores      = [d[1] for d in results]
+        return predictions, scores
 
     def predict_one_step(self, text: str) -> List[str]:
         results = []
@@ -157,15 +159,21 @@ class PinyinDetector(AbsDetector):
                 if np.sum(prob[start:end]) > 0:
                     continue
                 prob[start:end] = score
-                final_results.append([sub_word, '', [start, end]])
+                final_results.append([start, score, sub_word, '', [start, end]])
+        final_results = sorted(final_results)
 
-        return final_results
+        _final_results = []
+        final_scores   = []
+        for start, score, sub_word, type, position in final_results:
+            _final_results.append([sub_word, type, position])
+            final_scores.append(score)
+        return _final_results, final_scores
 
 
 if __name__ == '__main__':
     entity_path = "/share/nas165/amian/experiments/speech/EntityCorrector/blists/aishell/test_1_entities.txt"
-    text = "甚至被外界揣测是因为和软经天分手后所次"
+    text = "每日经济新闻记者杨建江南佳节六万"
 
     detector = PinyinDetector(entity_path)
-    prediction = detector.predict_one_step(text)
+    prediction = detector.predict([text])
     print(prediction)

@@ -3,3 +3,9 @@
 
 dump/*
 !dump/.gitkeep
+
+ckpts/*
+!ckpts/.gitkeep
+
+datas/entities/aishell/descriptions/*
+!datas/entities/aishell/descriptions/.gitkeep

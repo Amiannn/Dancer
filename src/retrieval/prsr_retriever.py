@@ -2,6 +2,7 @@ from typing import List
 
 from src.utils import read_file
 from src.utils import read_json
+from src.utils import write_file
 
 from src.retrieval.abs_retriever      import AbsRetriever
 from src.retrieval.pinyin_retriever   import PinyinRetriever
@@ -16,8 +17,13 @@ class PRSRRetriever(AbsRetriever):
             entity_vectors_path
         )
         self.phonetic_retriever = PinyinRetriever(entity_path)
-        self.phonetic_retriever.contexts = self._load_entity(self.semantic_retriever.contexts)
-
+        
+        self.overlap_contexts = []
+        for entity, _ in self.phonetic_retriever.contexts:
+            if entity in self.semantic_retriever.contexts:
+                self.overlap_contexts.append(entity)
+        
+        self.phonetic_retriever.contexts = self._load_entity(self.overlap_contexts)
         self.context2idx = {entity: idx for idx, entity in enumerate(self.semantic_retriever.contexts)}
 
     def _load_entity(self, contexts):
@@ -74,3 +80,7 @@ if __name__ == '__main__':
 
     results = retriever.retrieve([text for _ in range(len(span))], span)
     print(results)
+
+    # path = './test_1_entities_overlap.txt'
+    # entities = [[entity] for entity in retriever.overlap_contexts]
+    # write_file(path, entities)

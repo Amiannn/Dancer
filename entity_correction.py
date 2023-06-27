@@ -27,9 +27,11 @@ OUTPUT_DIR = './dump'
 def NameEntityCorrector(args, texts, detector, retriever, ref_texts=None, nbests=None, nbest_detector=None):
     if args.detection_model_type == "cheat_detector":
         predictions = detector.predict(ref_texts, texts)
-    else:
+    elif args.detection_model_type == "bert_detector":
+        predictions, detect_scores = detector.predict(texts)
+    elif args.detection_model_type == "ckip_detector":
         predictions = detector.predict(texts)
-    
+        
     if args.use_rejection:
         predictions_nbest = nbest_detector.predict_no_detect(texts, nbests, predictions)
     final_texts = []
@@ -73,6 +75,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     asr_texts = read_file(args.asr_transcription_path, sp=' ')
+    # asr_texts = read_file(args.asr_transcription_path, sp='  (')
+    # asr_texts = [[_id.replace(')', ''), text.replace(' ', '')] for text, _id in asr_texts]
+
     indexis   = [data[0] for data in asr_texts]
     texts     = [" ".join(data[1:]) for data in asr_texts]
 

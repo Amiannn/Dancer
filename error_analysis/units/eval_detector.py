@@ -75,11 +75,11 @@ def get_position(datas):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--entity_path"         ,  type=str, required=True)
-    parser.add_argument("--ref_path"            ,  type=str, required=True)
-    parser.add_argument("--hyp_path"            ,  type=str, required=True)
-    parser.add_argument("--model_type"          ,  type=str, required=True)
-    parser.add_argument("--model_path",  type=str, required=False)
+    parser.add_argument("--entity_path",  type=str, required=True)
+    parser.add_argument("--ref_path"   ,  type=str, required=True)
+    parser.add_argument("--hyp_path"   ,  type=str, required=True)
+    parser.add_argument("--model_type" ,  type=str, required=True)
+    parser.add_argument("--model_path" ,  type=str, required=False)
     args = parser.parse_args()
 
     gt_detector  = CheatDetector(args.entity_path)
@@ -99,6 +99,9 @@ if __name__ == '__main__':
 
     # get groundtruth
     ref_detection_result = gt_detector.predict(ref_texts, hyp_texts)
+    if args.model_type   == "bert_detector":
+        ref_detection_result, detect_score = ref_detection_result
+        
     # detector predict
     _hyp_detection_result = detector.predict(hyp_texts)
     
