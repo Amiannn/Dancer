@@ -20,7 +20,7 @@ $ git clone https://github.com/Amiannn/NameEntityCorretor.git
 
 ### Prediction
 
-```
+```bash
 $ python3 -m entity_correction \
     --asr_transcription_path "./datas/aishell_test_set/asr_transcription/conformer/hyp"         \
     --asr_nbest_transcription_path "./datas/aishell_test_set/asr_transcription/conformer/nbest" \
