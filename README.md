@@ -1,7 +1,8 @@
+![DANCER](./diagram.png)
+
 # DANCER💃: Entity Description Augmented Named Entity Corrector for Automatic Speech Recognition
 
 Implementation of Entity Description Augmented Named Entity Corrector for Automatic Speech Recognition.
-![DANCER](./diagram.png)
 
 ## Getting Started
 
