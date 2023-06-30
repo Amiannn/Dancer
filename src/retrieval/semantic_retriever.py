@@ -154,6 +154,7 @@ class SemanticRetriever(AbsRetriever):
         # normalize
         D = D - np.min(D)
         D = D / np.max(D)
+        D = D / np.sum(D)
         score = []
         # return score
         for i in range(D.shape[1]):

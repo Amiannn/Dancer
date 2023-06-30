@@ -150,11 +150,11 @@ class CheatDetector(AbsDetector):
         return predictions
 
 if __name__ == "__main__":
-    entity_path = "/share/nas165/amian/experiments/speech/EntityCorrector/blists/aishell/test_1_entities.txt"
+    entity_path = "./datas/entities/aishell/test_1_entities.txt"
     detector = CheatDetector(entity_path)
 
     target = "每日经济新闻记者杨建江南嘉捷六万"
-    text   = "每日经济新闻记者杨建江南嘉捷六万"
+    text   = "每日经济新闻记者杨建姜南佳節六万"
 
     prediction = detector.predict_one_step(target, text)
     print(prediction)

@@ -1,4 +1,8 @@
+import numpy as np
+
 from typing import List
+
+from pypinyin import lazy_pinyin
 
 from src.utils import read_file
 from src.utils import read_json
@@ -52,10 +56,12 @@ class PRSRRetriever(AbsRetriever):
         s_scores = {entity: score for score, entity in semantic_result}
 
         result = []
-        alpha  = 0.999
+        # alpha  = 0.999
+        alpha  = 0.9
         for entity in p_scores:
             ps = p_scores[entity]
             ss = s_scores[entity]
+            print(f'entity: {entity}, pinyin: {self.encode(entity)}, p_score:{ps:.3f}, s_score:{ss:.3f}')
             score = alpha * ps + (1 - alpha) * ss
             result.append([score, entity])
         return sorted(result, reverse=True)[:topk]
@@ -68,18 +74,21 @@ class PRSRRetriever(AbsRetriever):
         return results
 
 if __name__ == '__main__':
-    model_path  = "/share/nas165/amian/experiments/nlp/DPR/outputs/2023-03-07/16-45-46/output/dpr_biencoder.39"
-    entity_path = "/share/nas165/amian/experiments/speech/EntityCorrector/blists/aishell/test_1_entities.txt"
-    entity_content_path = "/share/nas165/amian/experiments/speech/AISHELL-NER/dump/2023_02_27__15_58_45_test/aishell_ner_ctx.json"
-    entity_vectors_path = "/share/nas165/amian/experiments/speech/AISHELL-NER/dump/2023_15_03__14_36_47/embeds.npy"
+    model_path  = "./ckpts/ranker/dpr_biencoder.39"
+    entity_path = "./datas/entities/aishell/test_1_entities.txt"
+    entity_content_path = "./datas/entities/aishell/descriptions/ctx.json"
+    entity_vectors_path = "./datas/entities/aishell/descriptions/embeds.npy"
 
     retriever = PRSRRetriever(model_path, entity_path, entity_content_path, entity_vectors_path)
 
-    text = "许玮拎日前传闻阮經天八年情变"
-    span = [["许玮拎", "", [0, 3]], ["阮經天", "", [7, 10]]]
+    text = "韩国媒体报道称而在淮确实人在日本"
+    span = [["而在淮", "", [7, 10]]]
 
     results = retriever.retrieve([text for _ in range(len(span))], span)
-    print(results)
+    print('_' * 30)
+    print(f'original: {span[0][0]}, pinyin: {retriever.encode(span[0][0])}')
+    for score, ent in results[0]:
+        print(f"entity: {ent}, score: {score:.3f}")
 
     # path = './test_1_entities_overlap.txt'
     # entities = [[entity] for entity in retriever.overlap_contexts]

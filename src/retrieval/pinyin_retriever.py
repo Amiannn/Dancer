@@ -1,3 +1,5 @@
+import numpy as np
+
 from typing import List
 
 from fuzzywuzzy import fuzz
@@ -31,6 +33,13 @@ class PinyinRetriever(AbsRetriever):
         score = fuzz.ratio(query, value) / 100
         return score
 
+    def normalize(self, datas):
+        score = [score for score, key in datas]
+        total = np.sum(score)
+        for i in range(len(datas)):
+            datas[i][0] = datas[i][0] / total
+        return datas
+
     def retrieve_one_step(self, text: str, span: List[str], topk: int=10) -> List[str]:
         entity, type, position = span
         query  = self.encode(entity)
@@ -39,7 +48,7 @@ class PinyinRetriever(AbsRetriever):
             key, value = self.contexts[i]
             score = self.similarity(query, value)
             result.append([score, key])
-        return sorted(result, reverse=True)[:topk]
+        return self.normalize(sorted(result, reverse=True)[:topk])
         
     def retrieve(self, texts: List[str], spans: List[str], topk: int=10) -> List[str]:
         results = []
