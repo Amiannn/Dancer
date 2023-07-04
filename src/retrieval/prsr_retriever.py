@@ -44,13 +44,13 @@ class PRSRRetriever(AbsRetriever):
         return score
 
     def retrieve_one_step(self, text: str, span: List[str], topk: int=10) -> List[str]:
-        phonetic_result = self.phonetic_retriever.retrieve_one_step(text, span)
+        phonetic_result = self.phonetic_retriever.retrieve_one_step(text, span, topk)
         
         idxs = [self.context2idx[entity] for score, entity in phonetic_result]
         self.semantic_retriever.contexts   = [entity for score, entity in phonetic_result]
         self.semantic_retriever.rank_index = self.semantic_retriever._build_rank_index(idxs)
 
-        semantic_result = self.semantic_retriever.retrieve_one_step(text, span)
+        semantic_result = self.semantic_retriever.retrieve_one_step(text, span, topk)
         
         p_scores = {entity: score for score, entity in phonetic_result}
         s_scores = {entity: score for score, entity in semantic_result}
@@ -58,12 +58,17 @@ class PRSRRetriever(AbsRetriever):
         result = []
         # alpha  = 0.999
         alpha  = 0.9
+        # alpha  = 0.5
         for entity in p_scores:
             ps = p_scores[entity]
             ss = s_scores[entity]
-            print(f'entity: {entity}, pinyin: {self.encode(entity)}, p_score:{ps:.3f}, s_score:{ss:.3f}')
+            # print(f'entity: {entity}, pinyin: {self.encode(entity)}, p_score:{ps:.3f}, s_score:{ss:.3f}')
             score = alpha * ps + (1 - alpha) * ss
             result.append([score, entity])
+        # print('*' * 30)
+        # for score, entity in sorted(result, reverse=True):
+        #     print(f'entity: {entity}, score: {score}')
+        # print('_' * 30)
         return sorted(result, reverse=True)[:topk]
         
     def retrieve(self, texts: List[str], spans: List[str], topk: int=10) -> List[str]:

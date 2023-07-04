@@ -1,11 +1,8 @@
-DECODING_DIR="./dump/2023_05_29__23_12_17"
-WORD_FREQ_PATH="./dump/2023_05_29__23_16_34/word_freq.txt"
-RARE_WORD_PATH="./blists/aishell/test_1_entities.txt"
+ENTITY_PATH="./datas/entities/aishell/test/test_1_entities.txt"
+REF_PATH="./datas/aishell_test_set/asr_transcription/conformer/confuse/ref_homophone_set"
+HYP_PATH="./datas/aishell_test_set/asr_transcription/conformer/confuse/hyp_homophone_set"
 
-./score.sh $DECODING_DIR
-
-python3 -m error_analysis.get_error_word_count \
-    "${DECODING_DIR}/result.wrd.txt" \
-    $WORD_FREQ_PATH \
-    $RARE_WORD_PATH
-
+python3 -m error_analysis.score \
+    --entity_path $ENTITY_PATH \
+    --ref_path $REF_PATH \
+    --hyp_path $HYP_PATH

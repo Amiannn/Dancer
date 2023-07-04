@@ -1,6 +1,5 @@
 import os
 import time
-import jieba
 import argparse
 
 from tqdm import tqdm
@@ -22,6 +21,8 @@ from src.retrieval.prsr_retriever     import PRSRRetriever
 
 from src.rejection.nbest_rejector import NbestRejector
 
+from error_analysis.score import get_error_analysis
+
 OUTPUT_DIR = './dump'
 
 def NameEntityCorrector(args, texts, detector, retriever, ref_texts=None, nbests=None, nbest_detector=None):
@@ -37,7 +38,7 @@ def NameEntityCorrector(args, texts, detector, retriever, ref_texts=None, nbests
     final_texts = []
     for i, prediction in tqdm(enumerate(predictions)):
         query_text = [texts[i] for _ in range(len(prediction))]
-        results    = retriever.retrieve(query_text, prediction)
+        results    = retriever.retrieve(query_text, prediction, topk=10)
         candiates  = [result[0][1] for result in results]
 
         if args.use_rejection:
@@ -65,6 +66,7 @@ if __name__ == '__main__':
     parser.add_argument("--retrieval_model_path"        ,  type=str, required=False)
 
     parser.add_argument("--entity_path"                 ,  type=str, required=True)
+    parser.add_argument("--entity_test_path"            ,  type=str, required=True)
     parser.add_argument("--entity_content_path"         ,  type=str, required=False)
     parser.add_argument("--entity_vectors_path"         ,  type=str, required=False)
 
@@ -75,8 +77,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     asr_texts = read_file(args.asr_transcription_path, sp=' ')
-    # asr_texts = read_file(args.asr_transcription_path, sp='  (')
-    # asr_texts = [[_id.replace(')', ''), text.replace(' ', '')] for text, _id in asr_texts]
 
     indexis   = [data[0] for data in asr_texts]
     texts     = [" ".join(data[1:]) for data in asr_texts]
@@ -128,25 +128,20 @@ if __name__ == '__main__':
     os.mkdir(exp_dir)
     print(f'save to {exp_dir}...')
 
+    analysis_result = get_error_analysis(args.entity_path, ref_texts, results)
+    print(f'analysis result: {analysis_result}')
+
     hyp = [[index, result] for index, result in zip(indexis, results)]
     ref = [[index, result] for index, result in zip(indexis, ref_texts)]
 
     config_path = os.path.join(exp_dir, 'config.json')
     write_json(config_path, args.__dict__)
 
+    analysis_path = os.path.join(exp_dir, 'result.json')
+    write_json(analysis_path, analysis_result)
+
     res_path = os.path.join(exp_dir, 'hyp.txt')
     write_file(res_path, hyp)
 
     res_path = os.path.join(exp_dir, 'ref.txt')
-    write_file(res_path, ref)
-
-    jieba.load_userdict(args.entity_path)
-
-    hyp = [[" ".join(jieba.cut(result, cut_all=False)), f"(aishell_{index})"] for index, result in zip(indexis, results)]
-    ref = [[" ".join(jieba.cut(result, cut_all=False)), f"(aishell_{index})"] for index, result in zip(indexis, ref_texts)]
-
-    res_path = os.path.join(exp_dir, 'hyp.trn.txt')
-    write_file(res_path, hyp)
-
-    res_path = os.path.join(exp_dir, 'ref.trn.txt')
     write_file(res_path, ref)

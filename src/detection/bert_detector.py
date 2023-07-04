@@ -52,7 +52,6 @@ class BertDetector(AbsDetector):
                 prob  = prob / np.sum(prob)
                 score = prob[1]
                 cl_scores.append(score)
-            print()
             wl_scores = []
             for entity, _, position in predict:
                 start, end = position

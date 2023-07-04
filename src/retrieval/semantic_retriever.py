@@ -152,9 +152,7 @@ class SemanticRetriever(AbsRetriever):
         embedding = pooled_output.detach().numpy()
         D, I = self.rank_index.search(embedding, topk)
         # normalize
-        D = D - np.min(D)
-        D = D / np.max(D)
-        D = D / np.sum(D)
+        D = D / np.linalg.norm(D, axis=1, keepdims=True)
         score = []
         # return score
         for i in range(D.shape[1]):

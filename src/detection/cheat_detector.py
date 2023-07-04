@@ -19,8 +19,9 @@ class CheatDetector(AbsDetector):
     def _load_entity(self, entity_path):
         contexts = []
         contexts = read_file(entity_path)
-        contexts = [e[0] for e in contexts]
-        return list(sorted(contexts, reverse=True))
+        contexts = [[len(e[0]), e[0]] for e in contexts]
+        contexts = [entity for length, entity in sorted(contexts, reverse=True)]
+        return contexts
     
     def _preprocess(self, texts):
         return [" ".join(list(text)) for text in texts]
@@ -87,9 +88,9 @@ class CheatDetector(AbsDetector):
         entity, entity_type, flatten = self.position_to_flatten(text, prediction)
         shift, flatten_shifted = 0, []
         for i in range(len(text)):
+            flatten_shifted.append(flatten[i - shift])
             if text[i] == add_token:
                 shift += 1
-            flatten_shifted.append(flatten[i - shift])
         datas = [entity, entity_type, flatten_shifted]
         prediction = self.flatten_to_position(text, datas)
         prediction = [[
@@ -126,16 +127,16 @@ class CheatDetector(AbsDetector):
                     continue
                 else:
                     hitmap += delta_hitmap
-                    datas.append([entity, 'CHEAT', position])
+                    datas.append([entity, 'ALIGNMENT', position])
         # sort it
         datas = sorted([[data[-1][0], data] for data in datas])
         datas = [data[1] for data in datas]
         return datas
 
-    def predict_one_step(self, target: str, text: str) -> List[str]:
+    def predict_one_step(self, target: str, text: str, return_align: bool=False) -> List[str]:
         target_prediction        = self.find_entity_mention(target)
         align_target, align_text = self.aligment(target, text)
-        
+
         if len(target_prediction) > 0:
             align_prediction  = self.shift(align_target, target_prediction, self.add_token)
             align_prediction  = [[
@@ -143,6 +144,8 @@ class CheatDetector(AbsDetector):
             ] for entity, entity_type, pos in align_prediction]
         else:
             align_prediction = target_prediction
+        if return_align:
+            return align_prediction, [target_prediction, align_target, align_text]
         return align_prediction
 
     def predict(self, targets: List[str], texts: List[str]) -> List[str]:
@@ -150,11 +153,14 @@ class CheatDetector(AbsDetector):
         return predictions
 
 if __name__ == "__main__":
-    entity_path = "./datas/entities/aishell/test_1_entities.txt"
+    entity_path = "./datas/entities/aishell/test/test_1_entities.txt"
     detector = CheatDetector(entity_path)
 
     target = "每日经济新闻记者杨建江南嘉捷六万"
-    text   = "每日经济新闻记者杨建姜南佳節六万"
+    text   = "每日经济新闻记杨建姜南佳節六万"
 
-    prediction = detector.predict_one_step(target, text)
+    prediction, align_target, align_text = detector.predict_one_step(target, text, return_align=True)
     print(prediction)
+
+    print(f'target: {align_target}')
+    print(f'text__: {align_text}')

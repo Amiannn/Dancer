@@ -2,8 +2,10 @@ import numpy as np
 
 from typing import List
 
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
+# from fuzzywuzzy import fuzz
+# from fuzzywuzzy import process
+from rapidfuzz import fuzz
+from rapidfuzz import process
 
 from pypinyin import Style
 from pypinyin import pinyin
@@ -48,7 +50,7 @@ class PinyinRetriever(AbsRetriever):
             key, value = self.contexts[i]
             score = self.similarity(query, value)
             result.append([score, key])
-        return self.normalize(sorted(result, reverse=True)[:topk])
+        return sorted(result, reverse=True)[:topk]
         
     def retrieve(self, texts: List[str], spans: List[str], topk: int=10) -> List[str]:
         results = []

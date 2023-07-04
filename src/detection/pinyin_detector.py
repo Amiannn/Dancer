@@ -5,8 +5,10 @@ import numpy as np
 from typing import List
 from tqdm   import tqdm
 
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
+# from fuzzywuzzy import fuzz
+# from fuzzywuzzy import process
+from rapidfuzz import fuzz
+from rapidfuzz import process
 
 from pypinyin import pinyin, lazy_pinyin
 
