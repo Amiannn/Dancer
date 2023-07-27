@@ -4,9 +4,9 @@ TRANSCRIPTION_NBEST_PATH="./datas/aishell_test_set/asr_transcription/conformer/n
 MANSCRIPTION_PATH="./datas/aishell_test_set/ref"
 
 # entity datas
-ENTITY_ROOT="./datas/entities/aishell"
-ENTITY_TEST_PATH="./datas/entities/aishell/test/test_1_entities.txt"
-ENTITY_FILES=("all_0_entities.txt" "all_0.02_entities.txt" "all_0.05_entities.txt" "all_0.1_entities.txt" "all_0.2_entities.txt")
+ENTITY_PATH="./datas/entities/aishell/all_ctx_entities.txt"
+ENTITY_TEST_ROOT="./datas/entities/aishell/shots"
+ENTITY_TEST=("test_0_shot_entities.txt" "test_1_shot_entities.txt" "test_5_shot_entities.txt" "test_10_shot_entities.txt" "test_20_shot_entities.txt" "test_100_shot_entities.txt")
 ENTITY_CONTENT_PATH="./datas/entities/aishell/descriptions/ctx.json"
 ENTITY_VECTORS_PATH="./datas/entities/aishell/descriptions/embeds.npy"
 
@@ -21,10 +21,10 @@ RETRIEVAL_MODEL_PATH="./ckpts/ranker/dpr_biencoder.39"
 # rejection
 USE_REJECTION="True"
 
-for filename in ${ENTITY_FILES[@]}
+for test_entity in ${ENTITY_TEST[@]}
 do
-    ENTITY_PATH=${ENTITY_ROOT}/${filename}
-    echo 'Coverage test: '${ENTITY_PATH}
+    ENTITY_TEST_PATH=${ENTITY_TEST_ROOT}/${test_entity}
+    echo 'Unseen test: '${ENTITY_TEST_PATH}
 
     python3 -m entity_correction                                 \
         --asr_transcription_path $TRANSCRIPTION_PATH             \

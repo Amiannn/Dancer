@@ -15,7 +15,8 @@ DETECTION_MODEL_PATH="./ckpts/ner/best_model"
 RETRIEVAL_MODEL_TYPE="pinyin_retriever"
 
 # rejection
-USE_REJECTION="True"
+# USE_REJECTION="True"
+USE_REJECTION="False"
 
 python3 -m entity_correction                                 \
     --asr_transcription_path $TRANSCRIPTION_PATH             \

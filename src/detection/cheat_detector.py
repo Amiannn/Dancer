@@ -18,7 +18,7 @@ class CheatDetector(AbsDetector):
 
     def _load_entity(self, entity_path):
         contexts = []
-        contexts = read_file(entity_path)
+        contexts = read_file(entity_path, sp=" ")
         contexts = [[len(e[0]), e[0]] for e in contexts]
         contexts = [entity for length, entity in sorted(contexts, reverse=True)]
         return contexts

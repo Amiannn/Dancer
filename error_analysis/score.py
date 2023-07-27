@@ -12,7 +12,6 @@ from src.utils import write_json
 from src.detection.cheat_detector import CheatDetector as AlignDetector
 
 OUTPUT_DIR = "./dump"
-# entity_path = "./datas/entities/aishell/test/test_1_entities.txt"
 
 def remove_entities(text, entities):
     for ent in entities:
@@ -84,9 +83,6 @@ if __name__ == '__main__':
     parser.add_argument("--ref_path"   ,  type=str, required=True)
     parser.add_argument("--hyp_path"   ,  type=str, required=True)
     args = parser.parse_args()
-
-    # hyps = ['阮经天和徐伟应用交往八年旅传婚讯', '阮经天和许玮大甯用交往八年旅传婚讯', '阮经天和徐伟应用交往八年旅传婚讯', '许罗云特地发微博感谢婚姻带来的幸福']
-    # refs = ['阮经天和许玮甯交往八年屡传婚讯', '阮经天和许玮甯用交往八年屡传婚讯', '阮经天和许玮甯用往八年屡传婚讯', '大许茹芸特发地微博感谢婚姻带来的幸福']
 
     refs = [text for id, text in read_file(args.ref_path, sp=" ")]
     hyps = [text for id, text in read_file(args.hyp_path, sp=" ")]

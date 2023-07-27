@@ -4,9 +4,8 @@ TRANSCRIPTION_NBEST_PATH="./datas/aishell_test_set/asr_transcription/conformer/n
 MANSCRIPTION_PATH="./datas/aishell_test_set/ref"
 
 # entity datas
-ENTITY_ROOT="./datas/entities/aishell"
+ENTITY_PATH="./datas/entities/aishell/all_ctx_entities.txt"
 ENTITY_TEST_PATH="./datas/entities/aishell/test/test_1_entities.txt"
-ENTITY_FILES=("all_0_entities.txt" "all_0.02_entities.txt" "all_0.05_entities.txt" "all_0.1_entities.txt" "all_0.2_entities.txt")
 ENTITY_CONTENT_PATH="./datas/entities/aishell/descriptions/ctx.json"
 ENTITY_VECTORS_PATH="./datas/entities/aishell/descriptions/embeds.npy"
 
@@ -18,19 +17,22 @@ DETECTION_MODEL_PATH="./ckpts/ner/best_model"
 RETRIEVAL_MODEL_TYPE="prsr_retriever"
 RETRIEVAL_MODEL_PATH="./ckpts/ranker/dpr_biencoder.39"
 
+PRSR_TOPK=("1" "5" "10" "20" "40" "80" "100")
+
 # rejection
 USE_REJECTION="True"
 
-for filename in ${ENTITY_FILES[@]}
+for topk in ${PRSR_TOPK[@]}
 do
-    ENTITY_PATH=${ENTITY_ROOT}/${filename}
-    echo 'Coverage test: '${ENTITY_PATH}
-
+    echo 'TopK testing: '${topk}
+    
     python3 -m entity_correction                                 \
         --asr_transcription_path $TRANSCRIPTION_PATH             \
         --asr_manuscript_path $MANSCRIPTION_PATH                 \
         --retrieval_model_type $RETRIEVAL_MODEL_TYPE             \
         --retrieval_model_path $RETRIEVAL_MODEL_PATH             \
+        --prsr_topk $topk                                        \
+        --prsr_prsr 0.5                                          \
         --detection_model_type $DETECTION_MODEL_TYPE             \
         --detection_model_path $DETECTION_MODEL_PATH             \
         --use_rejection $USE_REJECTION                           \

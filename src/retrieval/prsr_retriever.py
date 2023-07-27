@@ -13,7 +13,7 @@ from src.retrieval.pinyin_retriever   import PinyinRetriever
 from src.retrieval.semantic_retriever import SemanticRetriever
 
 class PRSRRetriever(AbsRetriever):
-    def __init__(self, model_path, entity_path, entity_content_path, entity_vectors_path):
+    def __init__(self, model_path, entity_path, entity_content_path, entity_vectors_path, alpha=0.9):
         self.semantic_retriever = SemanticRetriever(
             model_path, 
             entity_path, 
@@ -29,6 +29,9 @@ class PRSRRetriever(AbsRetriever):
         
         self.phonetic_retriever.contexts = self._load_entity(self.overlap_contexts)
         self.context2idx = {entity: idx for idx, entity in enumerate(self.semantic_retriever.contexts)}
+
+        # hyperparameter alpha
+        self.alpha = alpha
 
     def _load_entity(self, contexts):
         contexts = [[e, self.phonetic_retriever.encode(e)] for e in contexts]
@@ -56,14 +59,11 @@ class PRSRRetriever(AbsRetriever):
         s_scores = {entity: score for score, entity in semantic_result}
 
         result = []
-        # alpha  = 0.999
-        alpha  = 0.9
-        # alpha  = 0.5
         for entity in p_scores:
             ps = p_scores[entity]
             ss = s_scores[entity]
             # print(f'entity: {entity}, pinyin: {self.encode(entity)}, p_score:{ps:.3f}, s_score:{ss:.3f}')
-            score = alpha * ps + (1 - alpha) * ss
+            score = self.alpha * ps + (1 - self.alpha) * ss
             result.append([score, entity])
         # print('*' * 30)
         # for score, entity in sorted(result, reverse=True):

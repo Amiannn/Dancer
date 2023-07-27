@@ -4,9 +4,9 @@ TRANSCRIPTION_NBEST_PATH="./datas/aishell_test_set/asr_transcription/conformer/n
 MANSCRIPTION_PATH="./datas/aishell_test_set/ref"
 
 # entity datas
-ENTITY_ROOT="./datas/entities/aishell"
+ENTITY_ROOT="./datas/entities/aishell/scales"
 ENTITY_TEST_PATH="./datas/entities/aishell/test/test_1_entities.txt"
-ENTITY_FILES=("all_0_entities.txt" "all_0.02_entities.txt" "all_0.05_entities.txt" "all_0.1_entities.txt" "all_0.2_entities.txt")
+ENTITY_FILES=("all_1000_scale_entities.txt" "all_2000_scale_entities.txt" "all_3000_scale_entities.txt" "all_4000_scale_entities.txt" "all_5000_scale_entities.txt" "all_6000_scale_entities.txt" "all_7000_scale_entities.txt" "all_8000_scale_entities.txt" "all_9000_scale_entities.txt" "all_10000_scale_entities.txt" "all_11000_scale_entities.txt" "all_12000_scale_entities.txt" "all_13000_scale_entities.txt" "all_14000_scale_entities.txt" "all_15000_scale_entities.txt")
 ENTITY_CONTENT_PATH="./datas/entities/aishell/descriptions/ctx.json"
 ENTITY_VECTORS_PATH="./datas/entities/aishell/descriptions/embeds.npy"
 

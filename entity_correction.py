@@ -38,7 +38,7 @@ def NameEntityCorrector(args, texts, detector, retriever, ref_texts=None, nbests
     final_texts = []
     for i, prediction in tqdm(enumerate(predictions)):
         query_text = [texts[i] for _ in range(len(prediction))]
-        results    = retriever.retrieve(query_text, prediction, topk=10)
+        results    = retriever.retrieve(query_text, prediction, topk=int(args.prsr_topk))
         candiates  = [result[0][1] for result in results]
 
         if args.use_rejection:
@@ -64,6 +64,8 @@ if __name__ == '__main__':
     
     parser.add_argument("--retrieval_model_type"        ,  type=str, required=True)
     parser.add_argument("--retrieval_model_path"        ,  type=str, required=False)
+    parser.add_argument("--prsr_alpha"                  ,  type=str, required=False, default='0.9')
+    parser.add_argument("--prsr_topk"                   ,  type=str, required=False, default='10')
 
     parser.add_argument("--entity_path"                 ,  type=str, required=True)
     parser.add_argument("--entity_test_path"            ,  type=str, required=True)
@@ -107,7 +109,8 @@ if __name__ == '__main__':
             args.retrieval_model_path,
             args.entity_path,
             args.entity_content_path,
-            args.entity_vectors_path
+            args.entity_vectors_path,
+            float(args.prsr_alpha)
         )
 
     args.use_rejection = True if args.use_rejection == "True" else False
@@ -128,7 +131,7 @@ if __name__ == '__main__':
     os.mkdir(exp_dir)
     print(f'save to {exp_dir}...')
 
-    analysis_result = get_error_analysis(args.entity_path, ref_texts, results)
+    analysis_result = get_error_analysis(args.entity_test_path, ref_texts, results)
     print(f'analysis result: {analysis_result}')
 
     hyp = [[index, result] for index, result in zip(indexis, results)]
