@@ -14,7 +14,6 @@ Implementation of Entity Description Augmented Named Entity Corrector for Automa
 - Install [Faiss](https://github.com/facebookresearch/faiss/blob/main/INSTALL.md)
 - `$ pip install -r requirements`
 
-
 ## Scripts
 
 ```
@@ -53,16 +52,15 @@ $ python3 -m train_ced \
 
 ### Train Semantic Ranking Model
 
-For example, we train EDA-MLM on Aishell dataset as follows:
-
-```
-Coming soon
-```
+We train our EDA-MLM model on Aishell dataset (`datas/eda_mlm/aishell`) by using custom [DPR project](https://github.com/Amiannn/dpr)
 
 ### Evaluation
 
-```
-Coming soon
+```bash
+$ python3 -m error_analysis.score \
+    --entity_path "./datas/entities/aishell/test/test_1_entities.txt"     \
+    --ref_path "./datas/aishell_test_set/ref"                             \
+    --hyp_path "./datas/aishell_test_set/asr_transcription/conformer/hyp"
 ```
 
 ## Datas
