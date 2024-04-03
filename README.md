@@ -69,4 +69,4 @@ Coming soon
 - Download [Google-Drive](https://drive.google.com/drive/folders/1C1W80ZhgM9i_W65iS4Wzxz2yF0FHmGRF?usp=drive_link)
 
 ## Checkpoints
-- Download [Google-Drive](https://drive.google.com/drive/folders/1spaFOKm9RuWgt7pKqHmt8zGU_Yh6KHJO?usp=drive_link)
+- Download [Google-Drive](https://drive.google.com/drive/folders/1FODc095S1MclrpIzcmVxA8Yrh1gb_eEz?usp=drive_link)
