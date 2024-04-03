@@ -38,17 +38,22 @@ $ python3 -m entity_correction \
     --use_rejection "True"
 ```
 
-### Train NER Model
+### Train CED Model
 
-For example, we train models on Aishell dataset as follows:
+For example, we train CED model on Aishell dataset as follows:
 
 ```
-Coming soon
+$ python3 -m train_ced \
+    --train_path "./datas/ced/aishell_trainset_plus_conformer_nbest10_trainset_decode_result.json" \
+    --model_type "bert-base-chinese"                                                               \
+    --wandb "DANCER_CED_EXP"                                                                       \
+    --epoch 10                                                                                     \
+    --batch 256
 ```
 
 ### Train Semantic Ranking Model
 
-For example, we train models on Aishell dataset as follows:
+For example, we train EDA-MLM on Aishell dataset as follows:
 
 ```
 Coming soon
@@ -59,6 +64,9 @@ Coming soon
 ```
 Coming soon
 ```
+
+## Datas
+- Download [Google-Drive](https://drive.google.com/drive/folders/1C1W80ZhgM9i_W65iS4Wzxz2yF0FHmGRF?usp=drive_link)
 
 ## Checkpoints
 - Download [Google-Drive](https://drive.google.com/drive/folders/1spaFOKm9RuWgt7pKqHmt8zGU_Yh6KHJO?usp=drive_link)

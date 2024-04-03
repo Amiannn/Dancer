@@ -10,7 +10,6 @@ from src.utils import write_file
 from src.utils import write_json
 
 from src.retrieval.pinyin_retriever import PinyinRetriever
-# from src.detection.cheat_detector   import CheatDetector
 
 def check_ent(ref, hyp, entities):
     for ent, score in entities:
@@ -73,28 +72,20 @@ retriever = PinyinRetriever(FULL_ENTITY_PATH)
 entities = read_file(ENTITY_PATH)
 entities = [e[0] for e in entities]
 
-# print(entities)
-# datas = entity_confusion(entities)
+confusion_sets = entity_confusion(entities)
+confusion_sets = [[entity, str(confuse)] for confuse, entity in confusion_sets]
 
-# datas = [[entity, str(confuse)] for confuse, entity in datas]
+output_path = os.path.join(OUTPUT_DIR, 'homophone_set')
+write_file(output_path, confusion_sets)
 
-# output_path = os.path.join(OUTPUT_DIR, 'homophone_set')
-# write_file(output_path, datas)
+# CONFUSION_PATH = "./datas/aishell_test_set/asr_transcription/conformer/confuse/homophone_set"
+# confusion_sets = read_file(CONFUSION_PATH, sp=' ')
+# confusion_sets = [[entity, float(score)] for entity, score in confusion_sets]
 
-CONFUSION_PATH = "./datas/aishell_test_set/asr_transcription/conformer/confuse/homophone_set"
-confusion_sets = read_file(CONFUSION_PATH, sp=' ')
+confuse_hyps, confuse_refs = filter_utt(ids, hyps, refs, confusion_sets)
 
-confusion_sets = [[entity, float(score)] for entity, score in confusion_sets]
-
-confusion_sub_sets = confusion_sets[:100]
-
-confuse_hyps, confuse_refs = filter_utt(ids, hyps, refs, confusion_sub_sets)
-
-print(confuse_hyps)
-print(len(confuse_hyps))
-
-hyp_output_path = os.path.join(OUTPUT_DIR, 'hyp_homophone_small_set')
-ref_output_path = os.path.join(OUTPUT_DIR, 'ref_homophone_small_set')
+hyp_output_path = os.path.join(OUTPUT_DIR, 'hyp_homophone_set')
+ref_output_path = os.path.join(OUTPUT_DIR, 'ref_homophone_set')
 
 write_file(hyp_output_path, confuse_hyps)
 write_file(ref_output_path, confuse_refs)
