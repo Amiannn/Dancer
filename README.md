@@ -1,4 +1,4 @@
-![DANCER](./diagram.png)
+![DANCER](./diagram.svg)
 
 # DANCER💃: Entity Description Augmented Named Entity Corrector for Automatic Speech Recognition
 

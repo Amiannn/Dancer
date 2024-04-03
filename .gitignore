@@ -9,3 +9,5 @@ ckpts/*
 
 datas/*
 !datas/.gitkeep
+
+local/*
