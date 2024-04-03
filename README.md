@@ -42,7 +42,7 @@ $ python3 -m entity_correction \
 
 For example, we train CED model on Aishell dataset as follows:
 
-```
+```bash
 $ python3 -m train_ced \
     --train_path "./datas/ced/aishell_trainset_plus_conformer_nbest10_trainset_decode_result.json" \
     --model_type "bert-base-chinese"                                                               \
