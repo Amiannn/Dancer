@@ -43,8 +43,7 @@ $ python3 -m entity_correction \
 For example, we train models on Aishell dataset as follows:
 
 ```
-$ 
-$ 
+Coming soon
 ```
 
 ### Train Semantic Ranking Model
@@ -52,14 +51,13 @@ $
 For example, we train models on Aishell dataset as follows:
 
 ```
-$ 
-$ 
+Coming soon
 ```
 
 ### Evaluation
 
 ```
-$
+Coming soon
 ```
 
 ## Checkpoints
