@@ -63,4 +63,4 @@ $
 ```
 
 ## Checkpoints
-- Download [Google-Drive](https://pytorch.org/get-started/locally/)
+- Download [Google-Drive](https://drive.google.com/drive/folders/1spaFOKm9RuWgt7pKqHmt8zGU_Yh6KHJO?usp=drive_link)
