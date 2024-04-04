@@ -1,7 +1,7 @@
 # input datas
-TRANSCRIPTION_PATH="./datas/aishell_test_set/asr_transcription/conformer/confuse/hyp_homophone_set"
+TRANSCRIPTION_PATH="./datas/aishell_test_set/asr_transcription/conformer/hyp"
 TRANSCRIPTION_NBEST_PATH="./datas/aishell_test_set/asr_transcription/conformer/nbest"
-MANSCRIPTION_PATH="./datas/aishell_test_set/asr_transcription/conformer/confuse/ref_homophone_set"
+MANSCRIPTION_PATH="./datas/aishell_test_set/ref"
 
 # entity datas
 ENTITY_PATH="./datas/entities/aishell/all_ctx_entities.txt"
@@ -15,8 +15,7 @@ DETECTION_MODEL_PATH="./ckpts/ner/best_model"
 RETRIEVAL_MODEL_TYPE="pinyin_retriever"
 
 # rejection
-# USE_REJECTION="True"
-USE_REJECTION="False"
+USE_REJECTION="True"
 
 python3 -m entity_correction                                 \
     --asr_transcription_path $TRANSCRIPTION_PATH             \

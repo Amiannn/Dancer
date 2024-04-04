@@ -19,7 +19,6 @@ RETRIEVAL_MODEL_PATH="./ckpts/ranker/dpr_biencoder.39"
 
 # rejection
 USE_REJECTION="True"
-# USE_REJECTION="False"
 
 python3 -m entity_correction                                 \
     --asr_transcription_path $TRANSCRIPTION_PATH             \

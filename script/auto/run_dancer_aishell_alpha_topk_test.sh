@@ -1,11 +1,7 @@
 # input datas
-# TRANSCRIPTION_PATH="./datas/aishell_test_set/asr_transcription/conformer/hyp"
-# TRANSCRIPTION_NBEST_PATH="./datas/aishell_test_set/asr_transcription/conformer/nbest"
-# MANSCRIPTION_PATH="./datas/aishell_test_set/ref"
-
-TRANSCRIPTION_PATH="/share/nas165/amian/experiments/speech/espnet_old/workspace/esun_zh_tcpgen/asr1/exp/asr_train_asr_conformer_raw_zh_char_use_wandbtrue_sp/decode_asr_transformer_asr_model_valid.acc.ave_10best/aishell_ner/dev/text"
-TRANSCRIPTION_NBEST_PATH="/share/nas165/amian/experiments/speech/espnet_old/workspace/esun_zh_tcpgen/asr1/exp/asr_train_asr_conformer_raw_zh_char_use_wandbtrue_sp/decode_asr_transformer_asr_model_valid.acc.ave_10best/aishell_ner/dev/logdir"
-MANSCRIPTION_PATH="/share/nas165/amian/experiments/speech/espnet_old/workspace/esun_zh_tcpgen/asr1/data/aishell_ner/dev/text"
+TRANSCRIPTION_PATH="./datas/aishell_test_set/asr_transcription/conformer/hyp"
+TRANSCRIPTION_NBEST_PATH="./datas/aishell_test_set/asr_transcription/conformer/nbest"
+MANSCRIPTION_PATH="./datas/aishell_test_set/ref"
 
 # entity datas
 ENTITY_PATH="./datas/entities/aishell/all_ctx_entities.txt"
